@@ -1,0 +1,33 @@
+name: Check README and File Names
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Check README.md presence
+        run: |
+          if [ ! -f "README.md" ]; then
+            echo "ERROR: README.md not found!"
+            exit 1
+          fi
+
+      - name: Check file naming convention
+        run: |
+          for file in $(git ls-files); do
+            if [[ ! "$file" =~ ^[a-z0-9_\-/.]+$ ]]; then
+              echo "ERROR: Invalid file name $file"
+              exit 1
+            fi
+          done
+          echo "All file names are valid."
